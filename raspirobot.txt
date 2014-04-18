@@ -1,0 +1,42 @@
+För att köra RaspiRobot från en vanlig dator måste man ha:
+- raspirobotboard : ett styrkort som monteras på Raspberry Pi
+- WIFI-modul (USB)
+- trådlös mus
+- putty (putty.exe om Windows): program för datorna för att ansluta till Raspberry Pi, funkar som LXTerminal
+- IP scanner (eller liknande): program för datorn för att hitta din Raspberry Pi's IP-adress i nätverkat när den är påslagen. Man måste ange IP-adressen för att putty skall kunna koppla upp sig mot Raspberry Pi.
+
+Extra:
+- VNC-klient: inte nödvändigt men användbart om man vill ha en Raspberry Pi-desktop på datorskärmen utan att använda kabel mellan skärmen och Raspberry Pi.
+Raspberry Pi kan köra en s k VNC-server som gör det möjligt att ansluta via WiFifrån datorn. Då behöver man inget extra tangentbord eller mus. Nackdelen är att det inte går att köra vissa program via VNC (inte heller RaspiRobot). 
+
+Sätta ihop RaspiRobot:
+- Se till att ingen ström är ansluten.
+- Montera RaspiRobot-kortet på Raspberry Pi. Kolla så att pinnarna passar in rätt.
+- Spänn fast Raspberry Pi på kärran.
+- Spänn fast batteripaketet.
+- anslut motorkablarna till de blå plintarna på RapiRobot-kortet. Se boken.Sätts i följande ordning från vänster till höger: vänster hjul-svart sladd, vänster hjul-röd sladd, höger hjul- röd sladd, höger hjul-svart sladd. Blir det fel lär det märkas, men det är lätt att rätta till.
+
+
+Köra RaspiRobot:
+- OBS ström antingen via RaspiRobot-kortet (batterianslutningen) eller den vanliga USB-kontakten med nätsladd. Aldrig båda samtidigt.
+- koppla in ström från batterier eller från nätet
+- Raspberry Pi startar och nätverksanlutningen kommer igång efter någon minut
+
+För ett första test kan man koppla in ström till Raspberry Pi på det vanliga sättet med nätsladd.
+
+Test av LED: 
+- Starta Putty på datorn och anslut till Raspberry Pi. Man måste ange användare: pi och lösenord: raspberry
+- gå till RaspiRobot-foldern: cd RaspiRobot
+- kör sudo python led_test.py
+Nu skall det blinka. Avbryt med ctrl-C
+- stäng av Raspberry Pi med sudo poweroff
+- koppla ifrån strömkällan
+
+Köra roboten:
+- anslut batterierna så att Raspberry Pi startar
+- anslut med putty och logga in
+- se till att den trådlösa musen är ansluten
+- kör sudo python rover_run.py
+Man kör framåt med vänster musknapp, bakåt med höger. Så fort man släpper musknappen så stannar motorerna.
+Man svänger vänster genom att röra musen samtidigt som man trycker ned vänster musknapp, och höger på sammsätt men med höger musknapp. 
+Observera att räckvidden för musen är rätt kort så det kan hända att man tappar kontakten och roboten kör vidare utan att stanna.

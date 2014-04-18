@@ -1,0 +1,90 @@
+Raspberry Pi papers and challenges
+http://www.ocr.org.uk/qualifications/by-subject/computing/raspberry-pi/
+
+Ansluta till Rasperry Pi med SSH:
+ssh pi@192.168.2.4
+password: raspberry
+
+Kopiera folder från annan dator till RP:
+scp -r  “folder” pi@192.168.2.4:/home/pi/”destination folder”
+
+exempel:
+scp -r pythonproj pi@192.168.2.4:/home/pi/Python
+
+Starta VNC server:
+vncserver :1 -geometry 1280x800 -depth 16 -pixelformat rgb565
+Automatisk start av VNC, skapa startfil (gjort 140202):
+sudo nano /etc/init.d/tightvncserver
+sudo chmod 755 /etc/init.d/tightvncserver
+sudo update-rc.d tightvncserver defaults
+
+apt-get:
+uppdatera cache: sudo apt-get update
+uppgradera allt:  sudo apt-get  upgrade
+uppgradera speciellt paket: sudo apt-get install  <paket>
+
+Installerat:
+sudo apt-get install tightvncserver
+(sudo apt-cache search matplotlib)
+sudo apt-get install python-matplotlib
+sudo apt-get install python-matplotlib-doc
+
+Att installera:
+texlive-latex-recommended
+texstudio alt. texmaker
+qtikz
+klatexformula
+quake
+
+Git:
+Detta funkar ej:
+$ git clone ssh://henriknyberg@169.254.36.70/Users/henriknyberg/git/pygames 
+Cloning into 'pygames'...
+The authenticity of host '169.254.36.70 (169.254.36.70)' can't be established.
+RSA key fingerprint is b5:0e:dc:62:88:77:6c:1a:44:52:a3:99:ed:08:7f:83.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '169.254.36.70' (RSA) to the list of known hosts.
+Password:
+bash: git-upload-pack: command not found
+fatal: The remote end hung up unexpectedly
+
+Prova port 9418:
+Starta en git-demon på servern:
+git daemon --reuseaddr --base-path=/Users/henriknyberg/git /Users/henriknyberg/git
+På klienten:
+$ git clone ssh://henriknyberg@169.254.36.70:9418/Users/henriknyberg/git/pygames 
+Cloning into 'pygames'...
+...(inget händer,måste avbryta med ctrl-c)
+
+$ git clone git://169.254.36.70/pygames 
+Cloning into 'pygames'...
+fatal: remote error: access denied or repository not exported: /pygames
+på servern: [1387] ‘/Users/henriknyberg/git/pygames/.git’: not in whitelist
+
+För Raspirobot och rangefinder (2014.04.05):
+Rangefinder använder ttyAMA0 men störs av annan kommunikation som debian satt upp.
+Se http://www.irrational.net/2012/04/19/using-the-raspberry-pis-serial-port/
+Stoppa kärnans output att gå till ttyAMA0:
+sudo cp /boot/cmdline.txt /boot/cmdline_backup.txt
+sudo emacs /boot/cmdline.txt 
+- ta bort alla referenser till ttyAMA0
+- bota om
+sudo emacs /etc/inittab
+- kommenterat ut sista raden: 2:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100
+- bota om
+
+Skärm:
+NOOBS aktiverar forcerat HDMI-läge. För att använda komposit PAL, ta bort de auto-genererade inställningarna i /boot/config.txt :
+# NOOBS Auto-generated Settings:
+hdmi_force_hotplug=1
+config_hdmi_boost=4
+overscan_left=24
+overscan_right=24
+overscan_top=16
+overscan_bottom=16
+disable_overscan=0
+
+och aktivera PAL:
+sdtv_mode=2
+
+
