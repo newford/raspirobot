@@ -9,7 +9,19 @@ STOP = 'Stop'
 RIGHT = 'Right'
 LEFT = 'Left'
 
+FULL_SPEED = 16
+HALF_SPEED = 12
+MIN_SPEED = 1
+MAX_SPEED = 16
+ZERO_SPEED = 0
+START_SPEED = 8
+
+
 rr = RaspiRobot()
+
+# check if switch 1 closed: stop execution
+if rr.sw1_closed():
+    sys.exit()
 
 pygame.init()
 screen = pygame.display.set_mode((640, 480))
@@ -21,6 +33,9 @@ pygame.mouse.set_visible(0)
 dir_stop, dir_forward, dir_back, dir_left, dir_right = range(5)
 bot_direction = dir_stop
 status = STOP
+speed = 0
+speed1 = 0  # left wheel, facing front (!)
+speed2 = 0  # right wheel, facing front
 
 # Functions we need:
 
@@ -60,8 +75,8 @@ def update_distance(status = STOP):
         return
     message = 'Distance: ' + str(dist) + ' cm'
     status_message = 'Status: ' + status
-    text_surface = font.render(message, True, (127, 127, 127))
-    status_surface = font.render(status_message, True, (127, 127, 127))
+    text_surface = font.render(message, True, (150, 150, 150))
+    status_surface = font.render(status_message, True, (150, 150, 150))
     screen.fill((255, 255, 255))
     screen.blit(text_surface, (100, 100))
     screen.blit(status_surface,(100, 250))
@@ -93,7 +108,7 @@ def collision_avoid():
     backoff_time = 0.1
     rr.reverse(backoff_time)
 
-    turn_time = 0.5    
+    turn_time = 0.2
     # choose random direction
     r1 = random.uniform(-1,1)
     if r1 < 0:
@@ -119,6 +134,39 @@ def collision_avoid():
             time.sleep(0.05)
             dist = get_range()
     return dist >= 25
+
+def go_forward_pwm(left_duty = 0, right_duty = 0):
+    # left_duty range (0,16), 
+    # right_duty range (0,16), 
+    global bot_direction
+    bot_direction = dir_forward
+    # rr.forward()
+    rr.set_led1(True)
+    rr.set_led2(True)
+    # rough pwm of left and right channels
+    go = 1
+    for j in range(1, 100):
+        for i in range(0, 16):
+          rr.set_motors((left_duty * go > i), 0, (right_duty * go > i), 0)
+          if j == 199:
+              print('Left: ' + str(left_duty * (left_duty * go > i)) + 'Right: ' + str(right_duty * (right_duty * go > i)))
+
+def go_backward_pwm(left_duty = 0, right_duty = 0):
+    # left_duty range (0,16), 
+    # right_duty range (0,16), 
+    global bot_direction
+    bot_direction = dir_forward
+    # rr.forward()
+    rr.set_led1(True)
+    rr.set_led2(True)
+    # rough pwm of left and right channels
+    go = 1
+    for j in range(1, 100):
+        for i in range(0, 16):
+          rr.set_motors((left_duty * go > i), 1, (right_duty * go > i), 1)
+          if j == 199:
+              print('Left: ' + str(left_duty * (left_duty * go > i)) + 'Right: ' + str(right_duty * (right_duty * go > i)))
+
 
 def go_stop():
     global bot_direction
@@ -155,30 +203,91 @@ def go_left():
     rr.set_led2(False)
     rr.left()
 
+print('Welcome to Raspirobot!')
+
 while True:
+    key_action = False
     for event in pygame.event.get():
         if event.type == QUIT:
+            pygame.quit()
+            pygame.display.quit()
             sys.exit()
         if event.type == KEYDOWN:
+            key_action = True
             if event.key == K_UP:
-                go_forward()
+                print('FORWARD. Speed = ' + str(speed) + 'status: ' + status)
+                #go_forward()
+                if status != FORWARD:
+                    speed = 0
+                speed = max(START_SPEED,min(speed + 2, MAX_SPEED))
+                speed1 = speed
+                speed2 = speed
+                go_forward_pwm(speed1,speed2)
                 status = FORWARD
             elif event.key == K_DOWN:
-                go_back()
+                print('BACKWARD. Speed = ' + str(speed) + 'status: ' + status)
+                #go_back()
+                if status != BACKWARD:
+                    speed = 0
+                speed = max(START_SPEED,min(speed + 2, MAX_SPEED))
+                speed1 = speed
+                speed2 = speed
+                go_backward_pwm(speed1,speed2)
                 status = BACKWARD
             elif event.key == K_RIGHT:
+                print('RIGHT. Speed = ' + str(speed) + 'status: ' + status)
                 go_right()
+                if status != RIGHT:
+                    speed = 0
+                speed = 0
+                speed1 = 0
+                speed2 = 0
                 status = RIGHT
             elif event.key == K_LEFT:
+                print('LEFT. Speed = ' + str(speed) + 'status: ' + status)
                 go_left()
+                if status != LEFT:
+                    speed = 0
+                speed = 0
+                speed1 = 0
+                speed2 = 0
                 status = LEFT
             elif event.key == K_SPACE:
+                print('STOP. Speed = ' + str(speed) + 'status: ' + status)
+                speed = 0
+                speed1 = 0
+                speed2 = 0
                 go_stop()
                 status = STOP
             elif event.key == K_ESCAPE:
                 pygame.event.post(pygame.event.Event(QUIT))
+            elif event.key == ord('a'):
+                #go left
+                print('Turn left, speed = ' + str(speed) + 'status: ' + status)
+                speed = max(START_SPEED,speed)
+                speed1 = speed
+                speed2 = speed/2
+                if status == FORWARD:
+                    go_forward_pwm(speed1,speed2)
+                if status == BACKWARD:
+                    go_backward_pwm(speed1,speed2)
+            elif event.key == ord('d'):
+                #go right
+                print('Turn right, speed = ' + str(speed) + 'status: ' + status)
+                speed = max(START_SPEED,speed)
+                speed1 = speed/2
+                speed2 = speed
+                if status == FORWARD:
+                    go_forward_pwm(speed1,speed2)
+                if status == BACKWARD:
+                    go_backward_pwm(speed1,speed2)
+                
         elif event.type == MOUSEBUTTONDOWN: # this works with a wireless mouse connected to Pi
+            key_action = True
             (button1, button2, button3) = pygame.mouse.get_pressed()
+            speed = 0
+            speed1 = 0
+            speed2 = 0
             if button1 and status == FORWARD:
                 # this will never happen because STOP is set at MOUSEBUTTONUP
                 status = STOP
@@ -200,12 +309,20 @@ while True:
             print button1, button2, button3
 
         elif event.type == MOUSEBUTTONUP: # this works with a wireless mouse connected to Pi
+            key_action = True
             status = STOP
             rover_stop()
+            speed = 0
+            speed1 = 0
+            speed2 = 0
             print(status)
 
         elif event.type == MOUSEMOTION: # this works with a wireless mouse connected to Pi
+            key_action = True
             (button1, button2, button3) = pygame.mouse.get_pressed()
+            speed = 0
+            speed1 = 0
+            speed2 = 0
             if button1:
                 if status != LEFT:
                     status = LEFT
@@ -221,6 +338,7 @@ while True:
                     # buttons are up, so stop turning
                     status = STOP
                     rover_stop()
+                    speed = 0
                     print(status)
 
     newstatus = collision_check(status)
@@ -228,11 +346,24 @@ while True:
         print('Collision avoidance')
         success = collision_avoid()
         if success:
-            go_forward()
+            speed = START_SPEED
+            speed1 = speed
+            speed2 = speed
+            go_forward_pwm(speed1,speed2)
             print('Collision resolved!')
         else:
             status = STOP
+            speed = 0
             go_stop()
             print('Cannot resolve collision')
+    else:
+        if not(key_action):
+            # must keep motors going
+            if speed > 0 and speed < MAX_SPEED:
+                if status == FORWARD:
+                    go_forward_pwm(speed1, speed2)
+                elif status == BACKWARD:
+                    go_backward_pwm(speed1, speed2)
+
     update_distance(status)
-    time.sleep(0.05)
+    time.sleep(0.1)
