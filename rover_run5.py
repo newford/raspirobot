@@ -74,7 +74,7 @@ def collision_check(status):
     dist = get_range()
     if dist > 0 and dist < 25 and bot_direction == dir_forward:
         go_stop()
-        status = STOP
+        status = COLL_AVOID
     return status
 
 def collision_avoid():
@@ -364,10 +364,15 @@ while True:
                     print(status)
 
     newstatus = collision_check(status)
-    if status == FORWARD and newstatus == STOP:
+    if newstatus == COLL_AVOID:
         print('Collision avoidance')
+        if status != COLL_AVOID:
+            prev_status = status;
+            status = COLL_AVOID
+            update_distance(status)
         success = collision_avoid()
         if success:
+            status = prev_status   # reset status
             speed = START_SPEED
             speed1 = speed
             speed2 = speed
