@@ -11,6 +11,9 @@ scp -r  “folder” pi@192.168.2.4:/home/pi/”destination folder”
 exempel:
 scp -r pythonproj pi@192.168.2.4:/home/pi/Python
 
+Från RP till Mac:
+scp Pi\ notes.txt henriknyberg@192.168.0.23:/Users/henriknyberg/Public/Drop\ Box
+
 Starta VNC server:
 vncserver :1 -geometry 1280x800 -depth 16 -pixelformat rgb565
 Automatisk start av VNC, skapa startfil (gjort 140202):
@@ -28,6 +31,12 @@ sudo apt-get install tightvncserver
 (sudo apt-cache search matplotlib)
 sudo apt-get install python-matplotlib
 sudo apt-get install python-matplotlib-doc
+simpy:
+sudo apt-get install python-simpy  (installerar gammal simpy 2.3.1 + en massa annat, GUI)
+pip install -U simpy  (installerar simpy 3.0.4 och avinstallerar SimPy d v s simpy 2.3.1))
+
+setuptools >> sudo python ez_setup.py  
+
 
 Att installera:
 texlive-latex-recommended
@@ -35,6 +44,11 @@ texstudio alt. texmaker
 qtikz
 klatexformula
 quake
+
+pip
+sudo python get-pip.py  (Securely download `get-pip.py <https://raw.github.com/pypa/pip/master/contrib/get-pip.py>)
+or
+sudo apt-get install python-pip
 
 Git:
 Detta funkar ej:
