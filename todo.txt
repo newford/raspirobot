@@ -6,16 +6,19 @@ Collision avoidance:
 - svänger med max hastighet. Borde vara lägre.
 - börjar på min hastighet och ökar ej efter ny riktning. Borde vara ökande hastihet tills originalhastighet uppnåtts. 
 - intelligentare beteende? Backa?
-- mindre riktningsändring?
+- mindre riktnings�ndring?
 - undvika något som närmar sig vid stopp?
+=> Lade till input dist i drive_on. Kan anv�ndas f�r att �ndra hastighet.
 
 Stopp:
 - 2 olika typer av stopp: ett vilande, ett avvaktande
 
 Köra: 
 - automatiskt öka hastigheten om "fri sikt"?
+=> Lade till input dist i drive_on. Kan anv�ndas f�r att �ndra hastighet.
 
 Svänga: 
 - funkar dåligt nu, för lite gas? Man måste trycka upprepade gånger på sväng.
+=> �ndrat i drive_on. Avl�gsnat villkoret att speed > 0. OK?
 
 
