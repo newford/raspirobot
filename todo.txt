@@ -1,0 +1,21 @@
+Aktuell python-fil:
+rover_run5.py
+Version 2014-05-11
+
+Collision avoidance: 
+- svänger med max hastighet. Borde vara lägre.
+- börjar på min hastighet och ökar ej efter ny riktning. Borde vara ökande hastihet tills originalhastighet uppnåtts. 
+- intelligentare beteende? Backa?
+- mindre riktningsändring?
+- undvika något som närmar sig vid stopp?
+
+Stopp:
+- 2 olika typer av stopp: ett vilande, ett avvaktande
+
+Köra: 
+- automatiskt öka hastigheten om "fri sikt"?
+
+Svänga: 
+- funkar dåligt nu, för lite gas? Man måste trycka upprepade gånger på sväng.
+
+
