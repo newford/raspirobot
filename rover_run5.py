@@ -73,7 +73,7 @@ def get_range():
 
 def collision_check(status):
     dist = get_range()
-    if dist > 0 and dist < 25 and bot_direction == dir_forward:
+    if dist > 0 and dist < 25 and status == FORWARD:
         go_stop()
         status = COLL_AVOID
     return status
@@ -181,15 +181,14 @@ def  drive_on(status,hold_time = 0.1, speed1 = 0, speed2 = 0, dist = 0):
     # use input dist to alter speed
     while new_time < current_time + hold_time:
         # must keep motors going
-        if speed > 0:
-            if status == FORWARD:
-                go_forward_pwm(speed1, speed2)
-            elif status == BACKWARD:
-                go_backward_pwm(speed1, speed2)
-            elif status == LEFT:
-                go_left_pwm(START_SPEED)
-            elif status == RIGHT:
-                go_right_pwm(START_SPEED)
+        if status == FORWARD:
+            go_forward_pwm(speed1, speed2)
+        elif status == BACKWARD:
+            go_backward_pwm(speed1, speed2)
+        elif status == LEFT:
+            go_left_pwm(speed1)
+        elif status == RIGHT:
+            go_right_pwm(speed1)
         new_time = time.clock()
 
 
@@ -261,21 +260,23 @@ while True:
                 status = BACKWARD
             elif event.key == K_RIGHT:
                 print('RIGHT. Speed = ' + str(speed) + 'status: ' + status)
-                go_right_pwm(START_SPEED)
                 if status != RIGHT:
-                    speed = 0
-                speed = 0
-                speed1 = 0
-                speed2 = 0
+                    speed = START_SPEED
+                else:
+                    speed = max(START_SPEED,min(speed + 2, MAX_SPEED))
+                go_right_pwm(speed)
+                speed1 = speed
+                speed2 = speed
                 status = RIGHT
             elif event.key == K_LEFT:
                 print('LEFT. Speed = ' + str(speed) + 'status: ' + status)
-                go_left_pwm(START_SPEED)
                 if status != LEFT:
-                    speed = 0
-                speed = 0
-                speed1 = 0
-                speed2 = 0
+                    speed = START_SPEED
+                else:
+                    speed = max(START_SPEED,min(speed + 2, MAX_SPEED))
+                go_left_pwm(speed)
+                speed1 = speed
+                speed2 = speed
                 status = LEFT
             elif event.key == K_SPACE:
                 print('STOP. Speed = ' + str(speed) + 'status: ' + status)
