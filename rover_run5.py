@@ -130,7 +130,7 @@ def go_backward_pwm(left_duty = 0, right_duty = 0):
     # left_duty range (0,16), 
     # right_duty range (0,16), 
     global bot_direction
-    bot_direction = dir_forward
+    bot_direction = dir_back
     # rr.forward()
     rr.set_led1(True)
     rr.set_led2(True)
@@ -146,7 +146,7 @@ def go_left_pwm(left_duty = 0, alt_right_duty = 0):
     # left_duty range (0,16), 
     # right_duty range (0,16), 
     global bot_direction
-    bot_direction = dir_forward
+    bot_direction = dir_left
     right_duty = left_duty  # same speed on both wheels, but different directions
     rr.set_led1(True)
     rr.set_led2(False)
@@ -162,7 +162,7 @@ def go_right_pwm(left_duty = 0, alt_right_duty = 0):
     # left_duty range (0,16), 
     # right_duty range (0,16), 
     global bot_direction
-    bot_direction = dir_forward
+    bot_direction = dir_right
     right_duty = left_duty  # same speed on both wheels, but different directions
     rr.set_led1(False)
     rr.set_led2(True)
@@ -174,21 +174,22 @@ def go_right_pwm(left_duty = 0, alt_right_duty = 0):
           if j == 199:
               print('Left: ' + str(left_duty * (left_duty * go > i)) + 'Right: ' + str(right_duty * (right_duty * go > i)))
 
-def  drive_on(status,hold_time = 0.1, speed1 = 0, speed2 = 0, dist):
+def  drive_on(status,hold_time = 0.1, speed1 = 0, speed2 = 0, dist = 0):
     current_time = time.clock()
     new_time = current_time
     # TODO: fixme
     # use input dist to alter speed
     while new_time < current_time + hold_time:
         # must keep motors going
-        if status == FORWARD:
-            go_forward_pwm(speed1, speed2)
-        elif status == BACKWARD:
-            go_backward_pwm(speed1, speed2)
-        elif status == LEFT:
-            go_left_pwm(HALF_SPEED)
-        elif status == RIGHT:
-            go_right_pwm(HALF_SPEED)
+        if speed > 0:
+            if status == FORWARD:
+                go_forward_pwm(speed1, speed2)
+            elif status == BACKWARD:
+                go_backward_pwm(speed1, speed2)
+            elif status == LEFT:
+                go_left_pwm(START_SPEED)
+            elif status == RIGHT:
+                go_right_pwm(START_SPEED)
         new_time = time.clock()
 
 
@@ -260,7 +261,7 @@ while True:
                 status = BACKWARD
             elif event.key == K_RIGHT:
                 print('RIGHT. Speed = ' + str(speed) + 'status: ' + status)
-                go_right_pwm(HALF_SPEED)
+                go_right_pwm(START_SPEED)
                 if status != RIGHT:
                     speed = 0
                 speed = 0
@@ -269,7 +270,7 @@ while True:
                 status = RIGHT
             elif event.key == K_LEFT:
                 print('LEFT. Speed = ' + str(speed) + 'status: ' + status)
-                go_left_pwm(HALF_SPEED)
+                go_left_pwm(START_SPEED)
                 if status != LEFT:
                     speed = 0
                 speed = 0
@@ -375,9 +376,10 @@ while True:
         success = collision_avoid()
         if success:
             status = prev_status   # reset status
-            speed = START_SPEED
-            speed1 = speed
-            speed2 = speed
+            if speed < START_SPEED:
+                speed = START_SPEED
+                speed1 = speed
+                speed2 = speed
             go_forward_pwm(speed1,speed2)
             print('Collision resolved!')
         else:

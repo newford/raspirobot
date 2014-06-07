@@ -1,24 +1,26 @@
 Aktuell python-fil:
 rover_run5.py
-Version 2014-05-11
+Version 2014-06-07
 
 Collision avoidance: 
-- svÃ¤nger med max hastighet. Borde vara lÃ¤gre.
-- bÃ¶rjar pÃ¥ min hastighet och Ã¶kar ej efter ny riktning. Borde vara Ã¶kande hastihet tills originalhastighet uppnÃ¥tts. 
+Funktion: collision_avoid()
+-- sväng med pwm istället, hur hantera tid?
+- svänger med max hastighet. Borde vara lägre.
+- börjar på minimum hastighet och ökar ej efter ny riktning. Borde vara ökande hastihet tills originalhastighet uppnåtts. 
 - intelligentare beteende? Backa?
 - mindre riktningsändring?
-- undvika nÃ¥got som nÃ¤rmar sig vid stopp?
+- undvika något som närmar sig vid stopp?
 => Lade till input dist i drive_on. Kan användas för att ändra hastighet.
 
 Stopp:
 - 2 olika typer av stopp: ett vilande, ett avvaktande
 
-KÃ¶ra: 
-- automatiskt Ã¶ka hastigheten om "fri sikt"?
+Köra: 
+- automatiskt öka hastigheten om "fri sikt"?
 => Lade till input dist i drive_on. Kan användas för att ändra hastighet.
 
-SvÃ¤nga: 
-- funkar dÃ¥ligt nu, fÃ¶r lite gas? Man mÃ¥ste trycka upprepade gÃ¥nger pÃ¥ svÃ¤ng.
+Svänga: 
+- funkar dåligt nu, för lite gas? Man måste trycka upprepade gånger på sväng.
 => Ändrat i drive_on. Avlägsnat villkoret att speed > 0. OK?
 
 
